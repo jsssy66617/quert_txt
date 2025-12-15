@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>本地TXT文件内容搜索</title>
+    <link rel="stylesheet" href="styles.css">
+    <!-- 引入Fuse.js用于分词搜索 -->
+    <script src="https://cdn.jsdelivr.net/npm/fuse.js@7.0.0/dist/fuse.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1>本地TXT文件内容搜索</h1>
+        
+        <div class="search-section">
+            <input type="text" id="searchInput" placeholder="请输入关键词..." autocomplete="off">
+            <button id="searchBtn">搜索</button>
+            <div class="scan-options">
+                <label>
+                    <input type="radio" name="searchMode" id="folderMode" value="folder" checked> 文件夹
+                </label>
+                <label>
+                    <input type="radio" name="searchMode" id="fileMode" value="file"> 文件
+                </label>
+            </div>
+            <input type="file" id="folderInput" webkitdirectory directory multiple style="display: none;">
+            <input type="file" id="fileInput" accept=".txt" multiple style="display: none;">
+        </div>
+        
+        <div class="controls-section">
+            <div class="sort-controls">
+                <label>排序方式：</label>
+                <select id="sortSelect">
+                    <option value="time-desc">修改时间（最新）</option>
+                    <option value="time-asc">修改时间（最旧）</option>
+                    <option value="size-desc">文件大小（最大）</option>
+                    <option value="size-asc">文件大小（最小）</option>
+                </select>
+            </div>
+            <button id="historyBtn" class="history-btn">查看搜索历史</button>
+        </div>
+        
+        <!-- 搜索推荐 -->
+        <div id="recommendationsSection" class="recommendations-section" style="display: none;">
+            <h3>热门搜索</h3>
+            <div id="recommendationsList" class="recommendations-list"></div>
+        </div>
+        
+        <div id="resultsSection" class="results-section">
+            <div id="viewControls" class="view-controls" style="display: none;">
+                <button id="returnToAllBtn" class="return-btn">返回总查询界面</button>
+            </div>
+            <div id="resultsInfo" class="results-info"></div>
+            <div id="resultsList" class="results-list"></div>
+            <div id="pagination" class="pagination"></div>
+        </div>
+        
+        <!-- 搜索进度界面 -->
+        <div id="progressSection" class="progress-section" style="display: none;">
+            <div class="progress-header">
+                <h2>搜索进度</h2>
+                <div class="progress-controls">
+                    <button id="pauseBtn" class="control-btn pause-btn">暂停搜索</button>
+                    <button id="resumeBtn" class="control-btn resume-btn" style="display: none;">继续搜索</button>
+                    <button id="stopBtn" class="control-btn stop-btn">停止搜索</button>
+                </div>
+                <div class="progress-stats">
+                    <span id="currentFile">当前文件：无</span>
+                    <span id="progressCount">已完成：0 / 0</span>
+                </div>
+            </div>
+            
+            <div class="progress-table-container">
+                <table id="progressTable" class="progress-table">
+                    <thead>
+                        <tr>
+                        <th>文件名</th>
+                        <th>路径</th>
+                        <th>状态
+                            <select id="statusFilter" class="table-filter">
+                                <option value="all">全部</option>
+                                <option value="waiting">等待</option>
+                                <option value="searching">搜索中</option>
+                                <option value="completed-matches">已完成（有匹配）</option>
+                                <option value="completed-no-matches">已完成（无匹配）</option>
+                                <option value="failed">失败</option>
+                            </select>
+                        </th>
+                        <th id="sortMatchingLines" class="sortable">匹配行数<span class="sort-arrow"></span></th>
+                        <th id="sortSearchTime" class="sortable">搜索时间<span class="sort-arrow"></span></th>
+                        <th>进度</th>
+                    </tr>
+                    </thead>
+                    <tbody id="progressTableBody"></tbody>
+                </table>
+            </div>
+            
+            <div id="progressPagination" class="pagination"></div>
+            
+            <div class="search-stats" id="searchStats"></div>
+        </div>
+    </div>
+    
+    <!-- 文件详情模态框 -->
+    <div id="fileModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2 id="modalTitle"></h2>
+            <div id="modalContent"></div>
+        </div>
+    </div>
+    
+    <!-- 搜索历史模态框 -->
+    <div id="historyModal" class="modal">
+        <div class="modal-content history-modal-content">
+            <div class="modal-header">
+                <h2 id="historyModalTitle">搜索历史</h2>
+                <span class="close" id="closeHistoryModal">&times;</span>
+            </div>
+            <div class="history-controls">
+                <button id="clearHistoryBtn" class="clear-history-btn">清空历史记录</button>
+                <div id="historyPagination" class="pagination"></div>
+            </div>
+            <div id="historyList" class="history-list"></div>
+        </div>
+    </div>
+    
+    <script src="script.js"></script>
+</body>
+</html>
